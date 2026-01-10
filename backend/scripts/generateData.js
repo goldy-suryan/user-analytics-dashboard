@@ -15,7 +15,7 @@ for (let i = 0; i < USERS; i++) {
 
   users.push({
     user_id: userId,
-    signup_date: signupDate,
+    signup_date: { "$date": signupDate.toISOString() },
     age: faker.number.int({ min: 18, max: 60 }),
     gender: faker.helpers.arrayElement(['male', 'female', 'other']),
     country: faker.helpers.arrayElement(['India', 'USA', 'UK', 'Germany']),
@@ -31,7 +31,7 @@ for (let i = 0; i < USERS; i++) {
       event_id: faker.string.uuid(),
       user_id: userId,
       event_name: faker.helpers.arrayElement(['login', 'view', 'add_to_cart', 'purchase']),
-      event_timestamp: faker.date.between({ from: signupDate, to: new Date() })
+      event_timestamp: { "$date": faker.date.between({ from: signupDate, to: new Date() }).toISOString() }
     });
   }
 
@@ -40,14 +40,14 @@ for (let i = 0; i < USERS; i++) {
       transaction_id: faker.string.uuid(),
       user_id: userId,
       amount: faker.number.int({ min: 10, max: 500 }),
-      transaction_date: faker.date.recent({ days: 90 }),
+      transaction_date: { "$date": faker.date.recent({ days: 90 })},
       payment_status: faker.helpers.arrayElement(['success', 'failed'])
     });
   }
 }
 
-fs.writeFileSync('users.json', JSON.stringify(users));
-fs.writeFileSync('events.json', JSON.stringify(events));
-fs.writeFileSync('transactions.json', JSON.stringify(transactions));
+fs.writeFileSync('users.json', JSON.stringify(users, null, 2));
+fs.writeFileSync('events.json', JSON.stringify(events, null, 2));
+fs.writeFileSync('transactions.json', JSON.stringify(transactions, null, 2));
 
 // Now these generated files can be dumped to mongodb using mongoimport or use import in mongodb compass
