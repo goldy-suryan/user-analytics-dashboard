@@ -8,15 +8,22 @@
   gap: 1rem;
 }
 
-.chart {
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
   margin-top: 2rem;
-  margin-bottom: 4rem;
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  width: 45%;
-  float: left;
-  position: relative; 
+}
+
+.chart {
+  // margin-top: 2rem;
+  // margin-bottom: 4rem;
+  // background: white;
+  // padding: 2rem;
+  // border-radius: 8px;
+  // width: 45%;
+  // float: left;
+  // position: relative; 
   max-height: 350px;
 }
 
