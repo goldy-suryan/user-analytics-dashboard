@@ -7,6 +7,7 @@ Built using Node.js, Express, MongoDB, Angular, and Docker.
 This project demonstrates backend analytics APIs, frontend data visualization, filtering, and containerized deployment.
 
 ### Tech Stack
+---
 #### Backend
 * Node.js
 * Express.js
@@ -24,6 +25,7 @@ This project demonstrates backend analytics APIs, frontend data visualization, f
 * Docker Compose
 
 ### Features
+---
 #### KPIs
 * Total Users
 * Active Users (last 30 days)
@@ -51,6 +53,7 @@ This project demonstrates backend analytics APIs, frontend data visualization, f
 
 
 ### Running the Project with Docker (Recommended)
+---
 #### Prerequisites
 
 * Docker
@@ -77,6 +80,7 @@ docker-compose up --build
 ---
 
 ### Running the Project WITHOUT Docker
+---
 #### Prerequisites
 
 * Node.js (v18+)
@@ -136,6 +140,7 @@ http://localhost:4200
 ---
 
 ### Sample API Endpoints
+---
 ```
 GET /api/analytics/kpis
 GET /api/analytics/signups
