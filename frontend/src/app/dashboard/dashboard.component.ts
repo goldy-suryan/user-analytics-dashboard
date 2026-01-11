@@ -167,7 +167,7 @@ export class DashboardComponent implements OnInit {
 
   loadUserBreakdowns() {
     const params = this.filters;
-    this.analyticsService.getBreakdown('age', params).subscribe((data) => {
+    this.analyticsService.getAgeGroups(params).subscribe((data) => {
       this.ageChartData = {
         labels: data.map((d) => d._id),
         datasets: [{ label: 'Age Group', data: data.map((d) => d.count) }],
