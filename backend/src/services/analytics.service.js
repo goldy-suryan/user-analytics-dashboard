@@ -14,120 +14,59 @@ export const getKPIsService = async () => {
 
   const revenueResult = await Transaction.aggregate([
     { $match: { payment_status: 'success' } },
-    { $group: { _id: null, totalRevenue: { $sum: '$amount' } } },
+    {
+      $group: {
+        _id: null,
+        totalRevenue: { $sum: '$amount' },
+        totalPurchases: { $sum: 1 },
+      },
+    },
   ]);
+
+  const totalPurchases = revenueResult[0]?.totalPurchases || 0;
+  const totalRevenue = revenueResult[0]?.totalRevenue || 0;
+
+  const conversionRate =
+    totalUsers > 0
+      ? Number(((totalPurchases / totalUsers) * 100).toFixed(2))
+      : 0;
 
   return {
     totalUsers,
     activeUsers: activeUsers.length,
-    totalRevenue: revenueResult[0]?.totalRevenue || 0,
+    totalPurchases,
+    totalRevenue,
+    conversionRate,
   };
 };
 
-// export const getSignupsOverTimeService = async (from, to) => {
-//   return User.aggregate([
-//     {
-//       $match: {
-//         signup_date: { $gte: new Date(from), $lte: new Date(to) }
-//       }
-//     },
-//     {
-//       $group: {
-//         _id: {
-//           $dateToString: { format: '%Y-%m-%d', date: '$signup_date' }
-//         },
-//         count: { $sum: 1 }
-//       }
-//     },
-//     { $sort: { _id: 1 } }
-//   ]);
-// };
-
-// export const getEventsOverTimeService = async (from, to) => {
-//   return Event.aggregate([
-//     {
-//       $match: {
-//         event_timestamp: { $gte: new Date(from), $lte: new Date(to) }
-//       }
-//     },
-//     {
-//       $group: {
-//         _id: {
-//           $dateToString: { format: '%Y-%m-%d', date: '$event_timestamp' }
-//         },
-//         count: { $sum: 1 }
-//       }
-//     },
-//     { $sort: { _id: 1 } }
-//   ]);
-// };
-
-// export const getPurchasesOverTimeService = async (from, to) => {
-//   return Transaction.aggregate([
-//     {
-//       $match: {
-//         payment_status: 'success',
-//         transaction_date: { $gte: new Date(from), $lte: new Date(to) }
-//       }
-//     },
-//     {
-//       $group: {
-//         _id: {
-//           $dateToString: { format: '%Y-%m-%d', date: '$transaction_date' }
-//         },
-//         totalAmount: { $sum: '$amount' },
-//         count: { $sum: 1 }
-//       }
-//     },
-//     { $sort: { _id: 1 } }
-//   ]);
-// };
-
-// export const getBreakdownService = async (field) => {
-//   return User.aggregate([
-//     {
-//       $group: {
-//         _id: `$${field}`,
-//         count: { $sum: 1 }
-//       }
-//     },
-//     { $sort: { count: -1 } }
-//   ]);
-// };
-
-export const getAgeGroupBreakdownService = async () => {
-  return User.aggregate([
-    {
-      $bucket: {
-        groupBy: '$age',
-        boundaries: [18, 25, 35, 45, 60],
-        default: '60+',
-        output: {
-          count: { $sum: 1 },
-        },
-      },
-    },
-  ]);
-};
-
-const buildFilters = (query) => {
+const buildFilters = async (query, prop) => {
   const filters = {};
 
-  if (query.from || query.to) {
-    const dateFilter = {};
-    if (query.from) dateFilter.$gte = new Date(query.from);
-    if (query.to) dateFilter.$lte = new Date(query.to);
+  if ((query.from || query.to) && prop) {
+    filters[prop] = {};
+    if (query.from) filters[prop].$gte = new Date(query.from);
+    if (query.to) filters[prop].$lte = new Date(query.to);
   }
 
-  if (query.gender) filters.gender = query.gender;
-  if (query.country) filters.country = query.country;
-  if (query.device_type) filters.device_type = query.device_type;
+  if (query.gender || query.country || query.device_type) {
+    // Join User collection for filters
+    const matchUsers = await User.find({
+      ...(query.gender && { gender: query.gender }),
+      ...(query.country && { country: query.country }),
+      ...(query.device_type && { device_type: query.device_type }),
+    }).select('user_id');
+
+    const userIds = matchUsers.map((u) => u.user_id);
+    filters.user_id = { $in: userIds };
+  }
 
   return filters;
 };
 
 export const getSignupsOverTimeService = async (query) => {
-  const filters = buildFilters(query);
+  const filters = await buildFilters(query, 'signup_date');
+
   return User.aggregate([
     { $match: filters },
     {
@@ -143,24 +82,7 @@ export const getSignupsOverTimeService = async (query) => {
 };
 
 export const getEventsOverTimeService = async (query) => {
-  const filters = {};
-  if (query.from || query.to) {
-    filters.event_timestamp = {};
-    if (query.from) filters.event_timestamp.$gte = new Date(query.from);
-    if (query.to) filters.event_timestamp.$lte = new Date(query.to);
-  }
-
-  if (query.gender || query.country || query.device_type) {
-    // Join User collection for filters
-    const matchUsers = await User.find({
-      ...(query.gender && { gender: query.gender }),
-      ...(query.country && { country: query.country }),
-      ...(query.device_type && { device_type: query.device_type }),
-    }).select('user_id');
-
-    const userIds = matchUsers.map((u) => u.user_id);
-    filters.user_id = { $in: userIds };
-  }
+  const filters = await buildFilters(query, 'event_timestamp');
 
   return Event.aggregate([
     { $match: filters },
@@ -177,23 +99,10 @@ export const getEventsOverTimeService = async (query) => {
 };
 
 export const getPurchasesOverTimeService = async (query) => {
-  const filters = { payment_status: 'success' };
-  if (query.from || query.to) {
-    filters.transaction_date = {};
-    if (query.from) filters.transaction_date.$gte = new Date(query.from);
-    if (query.to) filters.transaction_date.$lte = new Date(query.to);
-  }
-
-  if (query.gender || query.country || query.device_type) {
-    const matchUsers = await User.find({
-      ...(query.gender && { gender: query.gender }),
-      ...(query.country && { country: query.country }),
-      ...(query.device_type && { device_type: query.device_type }),
-    }).select('user_id');
-
-    const userIds = matchUsers.map((u) => u.user_id);
-    filters.user_id = { $in: userIds };
-  }
+  const filters = {
+    ...(await buildFilters(query, 'transaction_date')),
+    payment_status: 'success',
+  };
 
   return Transaction.aggregate([
     { $match: filters },
@@ -202,8 +111,8 @@ export const getPurchasesOverTimeService = async (query) => {
         _id: {
           $dateToString: { format: '%Y-%m-%d', date: '$transaction_date' },
         },
-        totalAmount: { $sum: '$amount' },
-        count: { $sum: 1 },
+        totalPurchases: { $sum: 1 },
+        totalRevenue: { $sum: '$amount' },
       },
     },
     { $sort: { _id: 1 } },
@@ -211,7 +120,7 @@ export const getPurchasesOverTimeService = async (query) => {
 };
 
 export const getBreakdownService = async (field, query) => {
-  const filters = buildFilters(query);
+  const filters = await buildFilters(query, 'signup_date');
 
   return User.aggregate([
     { $match: filters },
@@ -222,5 +131,23 @@ export const getBreakdownService = async (field, query) => {
       },
     },
     { $sort: { count: -1 } },
+  ]);
+};
+
+export const getAgeGroupBreakdownService = async (query) => {
+  const filters = await buildFilters(query);
+
+  return User.aggregate([
+    { $match: filters },
+    {
+      $bucket: {
+        groupBy: '$age',
+        boundaries: [18, 25, 35, 45, 60],
+        default: '60+',
+        output: {
+          count: { $sum: 1 },
+        },
+      },
+    },
   ]);
 };

@@ -55,7 +55,7 @@ export const getBreakdown = async (req, res) => {
 
 export const getAgeGroupBreakdown = async (req, res) => {
   try {
-    const data = await getAgeGroupBreakdownService();
+    const data = await getAgeGroupBreakdownService(req.query);
     res.status(200).json(data);
   } catch (err) {
     res.status(500).json({ error: err.message });
