@@ -1,6 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { ChartConfiguration, ChartData } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { AnalyticsService } from '../core/services/analytics.service';
@@ -9,14 +14,27 @@ import { KpiCardComponent } from '../shared/components/kpi-card/kpi-card.compone
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, BaseChartDirective, KpiCardComponent, FormsModule],
+  imports: [
+    CommonModule,
+    BaseChartDirective,
+    KpiCardComponent,
+    FormsModule,
+    ReactiveFormsModule,
+  ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit {
   kpis: any = {};
-  fromDate!: string;
-  toDate!: string;
+  // fromDate!: string;
+  // toDate!: string;
+  // gender = '';
+  // country = '';
+  // device_type = '';
+  filters = {};
+
+  filterForm: FormGroup;
+
   signupChartData: ChartConfiguration<'line'>['data'] = {
     labels: [],
     datasets: [
@@ -46,12 +64,31 @@ export class DashboardComponent implements OnInit {
   deviceChartData: ChartData<'doughnut'> = { labels: [], datasets: [] };
   countryChartData: ChartData<'bar'> = { labels: [], datasets: [] };
 
-  constructor(private analyticsService: AnalyticsService) {}
+  constructor(
+    private analyticsService: AnalyticsService,
+    private fb: FormBuilder
+  ) {
+    this.filterForm = this.fb.group({
+      from: [''],
+      to: [''],
+      gender: [''],
+      country: [''],
+      device_type: [''],
+    });
+    this.generateLast3MonthsSpan();
+  }
 
   ngOnInit(): void {
-    this.generateLast3MonthsSpan();
     this.loadKPIs();
     this.applyFilters();
+    this.filterForm.valueChanges.subscribe((value) => {
+      Object.keys(value).forEach((key) => {
+        if (!value[key]) {
+          delete value[key];
+        }
+      });
+      this.filters = value;
+    });
   }
 
   generateLast3MonthsSpan() {
@@ -59,8 +96,10 @@ export class DashboardComponent implements OnInit {
     const pastDate = new Date();
     pastDate.setDate(today.getDate() - 90);
 
-    this.fromDate = pastDate.toISOString().split('T')[0];
-    this.toDate = today.toISOString().split('T')[0];
+    this.filterForm
+      .get('from')
+      ?.patchValue(pastDate.toISOString().split('T')[0]);
+    this.filterForm.get('to')?.patchValue(today.toISOString().split('T')[0]);
   }
 
   loadKPIs() {
@@ -70,82 +109,64 @@ export class DashboardComponent implements OnInit {
   }
 
   loadSignups() {
-    this.analyticsService
-      .getSignups({
-        from: this.fromDate,
-        to: this.toDate,
-      })
-      .subscribe((data) => {
-        this.signupChartData = {
-          labels: data.map((d) => d._id),
-          datasets: [
-            {
-              label: 'Signups',
-              data: data.map((d) => d.count),
-              tension: 0.3,
-              fill: false,
-            },
-          ],
-        };
-        console.log(this.signupChartData.datasets[0].data);
-      });
+    this.analyticsService.getSignups(this.filters).subscribe((data) => {
+      this.signupChartData = {
+        labels: data.map((d) => d._id),
+        datasets: [
+          {
+            label: 'Signups',
+            data: data.map((d) => d.count),
+            tension: 0.3,
+            fill: false,
+          },
+        ],
+      };
+      console.log(this.signupChartData.datasets[0].data);
+    });
   }
 
   loadEvents() {
-    this.analyticsService
-      .getEvents({
-        from: this.fromDate,
-        to: this.toDate,
-      })
-      .subscribe((data) => {
-        this.eventsChartData = {
-          labels: data.map((d) => d._id),
-          datasets: [
-            {
-              label: 'Events',
-              data: data.map((d) => d.count),
-            },
-          ],
-        };
-      });
+    this.analyticsService.getEvents(this.filters).subscribe((data) => {
+      this.eventsChartData = {
+        labels: data.map((d) => d._id),
+        datasets: [
+          {
+            label: 'Events',
+            data: data.map((d) => d.count),
+          },
+        ],
+      };
+    });
   }
 
   loadPurchases() {
-    this.analyticsService
-      .getPurchases({
-        from: this.fromDate,
-        to: this.toDate,
-      })
-      .subscribe((data) => {
-        const labels = data.map((d) => d._id);
+    this.analyticsService.getPurchases(this.filters).subscribe((data) => {
+      const labels = data.map((d) => d._id);
 
-        this.purchaseChartData = {
-          labels,
-          datasets: [
-            {
-              label: 'Purchases',
-              data: data.map((d) => d.totalPurchases),
-            },
-          ],
-        };
+      this.purchaseChartData = {
+        labels,
+        datasets: [
+          {
+            label: 'Purchases',
+            data: data.map((d) => d.totalPurchases),
+          },
+        ],
+      };
 
-        this.revenueChartData = {
-          labels,
-          datasets: [
-            {
-              label: 'Revenue',
-              data: data.map((d) => d.totalRevenue),
-            },
-          ],
-        };
-      });
+      this.revenueChartData = {
+        labels,
+        datasets: [
+          {
+            label: 'Revenue',
+            data: data.map((d) => d.totalRevenue),
+          },
+        ],
+      };
+    });
   }
 
   loadUserBreakdowns() {
-    const params = {
-      from: this.fromDate,
-      to: this.toDate,
-    };
+    const params = this.filters;
     this.analyticsService.getBreakdown('age', params).subscribe((data) => {
       this.ageChartData = {
         labels: data.map((d) => d._id),

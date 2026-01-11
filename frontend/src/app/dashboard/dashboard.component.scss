@@ -10,10 +10,11 @@
 
 .chart {
   margin-top: 2rem;
+  margin-bottom: 4rem;
   background: white;
-  padding: 1rem;
+  padding: 2rem;
   border-radius: 8px;
-  width: 46%;
+  width: 45%;
   float: left;
   position: relative; 
   max-height: 350px;
@@ -25,4 +26,17 @@
   align-items: center;
   height: 300px;
   // margin-top: 5rem;
+}
+
+.filters {
+  display: flex;
+  // width: 50%;
+  margin-top: 2rem;
+  label {
+    margin: 1rem;
+  }
+}
+
+form {
+  height: 50px;
 }
