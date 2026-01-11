@@ -6,7 +6,9 @@ Built using Node.js, Express, MongoDB, Angular, and Docker.
 
 This project demonstrates backend analytics APIs, frontend data visualization, filtering, and containerized deployment.
 
-### Tech Stack
+<br>
+
+## Tech Stack
 ---
 #### Backend
 * Node.js
@@ -24,7 +26,9 @@ This project demonstrates backend analytics APIs, frontend data visualization, f
 * Docker
 * Docker Compose
 
-### Features
+<br>
+
+## Features
 ---
 #### KPIs
 * Total Users
@@ -51,8 +55,9 @@ This project demonstrates backend analytics APIs, frontend data visualization, f
 * Device type
 * Clear filters option
 
+<br>
 
-### Running the Project with Docker (Recommended)
+## Running the Project with Docker (Recommended)
 ---
 #### Prerequisites
 
@@ -68,16 +73,16 @@ docker-compose up --build
 #### What This Does
 
 * Starts MongoDB
-* Seeds database with ~10,000 synthetic users automatically
+* Seeds database with 10,000 synthetic users automatically
 * Starts backend API
 * Builds and serves Angular frontend via Nginx
 
 #### Access the Application
 * Frontend: http://localhost:4200
-* Backend APIs: http://localhost:5000/api/analytics
+* Backend APIs: http://localhost:4000/api/analytics
 * MongoDB: localhost:27017
 
----
+<br>
 
 ### Running the Project WITHOUT Docker
 ---
@@ -108,7 +113,7 @@ Create `.env` file:
 
 ```
 MONGO_URI=mongodb://localhost:27017/analytics
-PORT=5000
+PORT=4000
 ```
 
 #### Seed Database (one time)
@@ -137,7 +142,7 @@ Frontend will run on:
 ```
 http://localhost:4200
 ```
----
+<br>
 
 ### Sample API Endpoints
 ---
