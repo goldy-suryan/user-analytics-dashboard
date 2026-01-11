@@ -12,7 +12,8 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 2rem;
-  margin-top: 2rem;
+  row-gap: 6rem;
+  margin-top: 4rem;
 }
 
 .chart {
@@ -25,6 +26,12 @@
   // float: left;
   // position: relative; 
   max-height: 350px;
+  h3 {
+    margin-bottom: 1rem;
+  }
+  canvas {
+    // border: 1px solid #ccc;
+  }
 }
 
 .middle {

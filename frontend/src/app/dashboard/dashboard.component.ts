@@ -65,8 +65,8 @@ export class DashboardComponent implements OnInit {
   countryChartData: ChartData<'bar'> = { labels: [], datasets: [] };
 
   constructor(
-    private analyticsService: AnalyticsService,
-    private fb: FormBuilder
+    readonly analyticsService: AnalyticsService,
+    readonly fb: FormBuilder
   ) {
     this.filterForm = this.fb.group({
       from: [''],
@@ -203,5 +203,10 @@ export class DashboardComponent implements OnInit {
     this.loadEvents();
     this.loadPurchases();
     this.loadUserBreakdowns();
+  }
+
+  clearFilter() {
+    this.filterForm.reset();
+    this.applyFilters();
   }
 }
