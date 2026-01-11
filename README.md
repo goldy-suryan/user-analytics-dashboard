@@ -9,7 +9,7 @@ This project demonstrates backend analytics APIs, frontend data visualization, f
 <br>
 
 ## Tech Stack
----
+
 #### Backend
 * Node.js
 * Express.js
@@ -29,7 +29,7 @@ This project demonstrates backend analytics APIs, frontend data visualization, f
 <br>
 
 ## Features
----
+
 #### KPIs
 * Total Users
 * Active Users (last 30 days)
@@ -58,7 +58,7 @@ This project demonstrates backend analytics APIs, frontend data visualization, f
 <br>
 
 ## Running the Project with Docker (Recommended)
----
+
 #### Prerequisites
 
 * Docker
@@ -84,8 +84,8 @@ docker-compose up --build
 
 <br>
 
-### Running the Project WITHOUT Docker
----
+## Running the Project WITHOUT Docker
+
 #### Prerequisites
 
 * Node.js (v18+)
@@ -101,7 +101,6 @@ mongod
 
 Or ensure MongoDB is running and accessible.
 
----
 
 #### 2. Backend Setup
 ```
@@ -144,8 +143,8 @@ http://localhost:4200
 ```
 <br>
 
-### Sample API Endpoints
----
+## Sample API Endpoints
+
 ```
 GET /api/analytics/kpis
 GET /api/analytics/signups
