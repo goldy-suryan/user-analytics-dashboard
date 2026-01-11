@@ -1,0 +1,28 @@
+.dashboard {
+  padding: 2rem;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+}
+
+.chart {
+  margin-top: 2rem;
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  width: 46%;
+  float: left;
+  position: relative; 
+  max-height: 350px;
+}
+
+.middle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  // margin-top: 5rem;
+}

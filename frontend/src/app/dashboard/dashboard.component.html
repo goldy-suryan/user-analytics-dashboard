@@ -1,0 +1,78 @@
+<div class="dashboard">
+  <div class="kpi-grid" *ngIf="kpis?.totalUsers !== undefined">
+    <app-kpi-card title="Total Users" [value]="kpis?.totalUsers"></app-kpi-card>
+    <app-kpi-card
+      title="Active Users"
+      [value]="kpis?.activeUsers"
+    ></app-kpi-card>
+    <app-kpi-card
+      title="Total Revenue"
+      [value]="kpis?.totalRevenue"
+    ></app-kpi-card>
+    <app-kpi-card
+      title="Purchases"
+      [value]="kpis?.totalPurchases || 0"
+    ></app-kpi-card>
+    <app-kpi-card
+      title="Conversion Rate"
+      [value]="kpis?.conversionRate || 0"
+    ></app-kpi-card>
+  </div>
+
+  <div class="filters">
+    <label>
+      From:
+      <input type="date" [(ngModel)]="fromDate" />
+    </label>
+
+    <label>
+      To:
+      <input type="date" [(ngModel)]="toDate" />
+    </label>
+
+    <button (click)="applyFilters()">Apply</button>
+  </div>
+  <div class="chart">
+    <h3>Signups Over Time</h3>
+    <canvas baseChart [type]="'line'" [data]="signupChartData"> </canvas>
+  </div>
+
+  <div class="chart">
+    <h3>Events Over Time</h3>
+    <canvas baseChart [type]="'line'" [data]="eventsChartData"> </canvas>
+  </div>
+
+  <div class="chart">
+    <h3>Purchases Over Time</h3>
+    <canvas baseChart [type]="'line'" [data]="purchaseChartData"></canvas>
+  </div>
+
+  <div class="chart">
+    <h3>Revenue Over Time</h3>
+    <canvas baseChart [type]="'line'" [data]="revenueChartData"></canvas>
+  </div>
+
+  <div class="chart">
+    <h3>Users by Age Group</h3>
+    <canvas baseChart [type]="'bar'" [data]="ageChartData"></canvas>
+  </div>
+
+  <div class="chart">
+    <h3>Users by Gender</h3>
+    <div class="middle">
+      <canvas baseChart [type]="'pie'" [data]="genderChartData"></canvas>
+    </div>
+  </div>
+
+  <div class="chart">
+    <h3>Users by Device</h3>
+    <div class="middle">
+      <canvas baseChart [type]="'doughnut'" [data]="deviceChartData"></canvas>
+    </div>
+  </div>
+
+  <div class="chart">
+    <h3>Users by Country</h3>
+    <canvas baseChart [type]="'bar'" [data]="countryChartData"></canvas>
+  </div>
+</div>
