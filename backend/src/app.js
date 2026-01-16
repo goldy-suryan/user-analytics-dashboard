@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import analyticsRoutes from './routes/analytics.routes.js';
+import { errorHandler } from './middlewares/errorHandler.js';
 
 const app = express();
 
@@ -25,12 +26,6 @@ app.use((req, res, next) => {
   next(error);
 });
 
-app.use((err, req, res, next) => {
-  res.status(err.status || 500).json({
-    error: {
-      message: err.message || 'Something went wrong',
-    },
-  });
-})
+app.use(errorHandler);
 
 export default app;

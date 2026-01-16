@@ -40,6 +40,20 @@ export const getKPIsService = async () => {
   };
 };
 
+export const getMetadataService = async () => {
+  const [countries, genders, devices] = await Promise.all([
+    User.distinct('country'),
+    User.distinct('gender'),
+    User.distinct('device_type'),
+  ]);
+
+  return {
+    countries,
+    genders,
+    devices,
+  };
+};
+
 const buildFilters = async (query, prop) => {
   const filters = {};
 
