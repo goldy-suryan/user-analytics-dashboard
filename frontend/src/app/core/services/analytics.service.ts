@@ -12,6 +12,14 @@ export class AnalyticsService {
     return this.http.get(`${this.API}/kpis`, { params: filters });
   }
 
+  getMetadata() {
+    return this.http.get<{
+      countries: string[];
+      genders: string[];
+      devices: string[];
+    }>(`${this.API}/metadata`);
+  }
+
   getSignups(filters: any = {}): Observable<any[]> {
     return this.http.get<any[]>(`${this.API}/signups`, { params: filters });
   }

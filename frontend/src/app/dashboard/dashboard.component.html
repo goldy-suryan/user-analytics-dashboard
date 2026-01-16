@@ -22,45 +22,64 @@
   <form [formGroup]="filterForm">
     <div class="filters form-group">
       <label> From: </label>
-      <input class="form-control" type="date" formControlName="from" />
+      <input
+        class="form-control"
+        type="date"
+        formControlName="from"
+        [max]="filterForm.get('to')?.value || maxDate"
+      />
 
       <label> To: </label>
-      <input class="form-control" type="date" formControlName="to" />
+      <input
+        class="form-control"
+        type="date"
+        formControlName="to"
+        [min]="filterForm.get('from')?.value"
+        [max]="maxDate"
+      />
 
       <label> Gender: </label>
       <select class="form-select" formControlName="gender">
         <option value="" selected>Select</option>
-        <option value="male">Male</option>
-        <option value="female">Female</option>
-        <option value="other">Other</option>
+        <option *ngFor="let g of genders" [value]="g">{{ g }}</option>
       </select>
 
       <label> Country: </label>
       <select class="form-select" formControlName="country">
         <option value="" selected>Select</option>
-        <option value="India">India</option>
-        <option value="USA">USA</option>
-        <option value="UK">UK</option>
-        <option value="Germany">Germany</option>
+        <option *ngFor="let c of countries" [value]="c">{{ c }}</option>
       </select>
 
       <label> Device: </label>
       <select class="form-select" formControlName="device_type">
         <option value="" selected>Select</option>
-        <option value="ios">IOS</option>
-        <option value="android">Android</option>
-        <option value="web">Web</option>
+        <option *ngFor="let d of devices" [value]="d">{{ d }}</option>
       </select>
 
       <button class="btn btn-primary ms-3 w-50" (click)="applyFilters()">
         Apply
       </button>
     </div>
-    <button type="button" class="btn btn-link" (click)="clearFilter()">Clear filter</button>
+    <div
+      class="text-danger mt-1"
+      *ngIf="filterForm.errors?.['dateRangeInvalid']"
+    >
+      From date cannot be greater than To date
+    </div>
+
+    <div
+      class="text-danger mt-1"
+      *ngIf="filterForm.errors?.['futureDateInvalid']"
+    >
+      Future dates are not allowed
+    </div>
+    <button type="button" class="btn btn-link" (click)="clearFilter()">
+      Clear filter
+    </button>
   </form>
-  
+
   <!-- chart grid -->
-   <div class="chart-grid">
+  <div class="chart-grid">
     <div class="chart">
       <h3>Signups Over Time</h3>
       <canvas baseChart [type]="'line'" [data]="signupChartData"> </canvas>
@@ -104,5 +123,5 @@
         <canvas baseChart [type]="'doughnut'" [data]="deviceChartData"></canvas>
       </div>
     </div>
-   </div>
+  </div>
 </div>
