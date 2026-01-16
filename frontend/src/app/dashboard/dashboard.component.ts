@@ -252,6 +252,13 @@ export class DashboardComponent implements OnInit {
       this.filterForm.markAllAsTouched();
       return;
     }
+    this.errorMessage = {
+      metadataError: '',
+      kpiError: '',
+      signupError: '',
+      eventsError: '',
+      purchaseRevenueError: '',
+    };
     this.loadSignups();
     this.loadEvents();
     this.loadPurchases();
@@ -262,5 +269,12 @@ export class DashboardComponent implements OnInit {
     this.filterForm.reset();
     this.generateLast3MonthsSpan();
     this.applyFilters();
+  }
+
+  get uniqueErrorMessages(): string[] {
+    const values = Object.values(this.errorMessage).filter(
+      (msg) => msg.trim() !== ''
+    );
+    return Array.from(new Set(values));
   }
 }

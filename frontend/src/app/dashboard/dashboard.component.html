@@ -19,6 +19,11 @@
     ></app-kpi-card>
   </div>
 
+  <div *ngFor="let message of uniqueErrorMessages">
+    <span class="text-danger" *ngIf="message">{{ message }}</span>
+  </div>
+  <div></div>
+
   <form [formGroup]="filterForm">
     <div class="filters form-group">
       <label> From: </label>
